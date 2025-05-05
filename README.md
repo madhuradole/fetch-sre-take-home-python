@@ -1,4 +1,4 @@
-# fetch-sre-take-home-exercise-python-main
+# Fetch SRE Take Home Exercise (Python)
 
 ### Author: Madhura Dole
 
