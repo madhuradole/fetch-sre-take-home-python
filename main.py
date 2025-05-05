@@ -1,3 +1,5 @@
+import json
+
 import yaml
 import requests
 import time
@@ -11,12 +13,13 @@ def load_config(file_path):
 # Function to perform health checks
 def check_health(endpoint):
     url = endpoint['url']
-    method = endpoint.get('method')
+    method = endpoint.get('method').upper()
     headers = endpoint.get('headers')
     body = endpoint.get('body')
 
     try:
         response = requests.request(method, url, headers=headers, json=body)
+        # print(response)
         if 200 <= response.status_code < 300:
             return "UP"
         else:
@@ -31,6 +34,7 @@ def monitor_endpoints(file_path):
 
     while True:
         for endpoint in config:
+            # ignore port numbers when determining the domain
             domain = endpoint["url"].split("//")[-1].split("/")[0]
             result = check_health(endpoint)
 
@@ -38,11 +42,15 @@ def monitor_endpoints(file_path):
             if result == "UP":
                 domain_stats[domain]["up"] += 1
 
+            print(domain_stats)
+
         # Log cumulative availability percentages
         for domain, stats in domain_stats.items():
             availability = round(100 * stats["up"] / stats["total"])
+            # Print availability by domain
             print(f"{domain} has {availability}% availability percentage")
 
+        # Log availability every 15 seconds
         print("---")
         time.sleep(15)
 
